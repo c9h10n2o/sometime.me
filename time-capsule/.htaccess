@@ -1,0 +1,2 @@
+RewriteEngine on
+RewriteRule ^comments-([0-9]+).json$ comments.php?id=$1 [L]

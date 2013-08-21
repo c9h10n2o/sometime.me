@@ -1,0 +1,6 @@
+*.sql
+gallery/large/*
+gallery/thumbs/*
+time-capsule/data
+time-capsule/sample
+tara.html

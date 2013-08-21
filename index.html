@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="description" content="生活是一首诗，每个瞬间都是断章。" >
+<meta name="keywords" content="摄影,胶片,古琴,单车,旅行,独立摄影师,前端开发,寒塘渡月,黑糖,木樨,c9h10n2o">
+<meta name="someone" content="木樨" >
+<meta name="sometime" content="071213,090209,121228,130316,130520,130707~130807" >
+<meta name="somewhere" content="金陵,杭州,姑苏" >
+<meta name="author" content="寒塘渡月">
+<meta name="viewport" content="width=920">
+<title>断章 - 寒塘渡月</title>
+<link rel="stylesheet" href="css/common.css" type="text/css">
+<link rel="stylesheet" href="css/home.css" type="text/css">
+<link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
+<link rel="apple-touch-icon" href="images/favicons/favicon-ios-57.png">
+<link rel="apple-touch-icon" href="images/favicons/favicon-ios-72.png" sizes="72x72">
+<link rel="apple-touch-icon" href="images/favicons/favicon-ios-114.png" sizes="114x114">
+<link rel="alternate" href="rss" type="application/rss+xml" title="预订明晚的月光">
+<base target="_blank">
+</head>
+
+<body>
+	<div id="doc">
+        <div id="hd">
+            <div class="logo"></div>
+        	<div id="about" class="hdn3" style="display:none">
+    			<a href="/" title="倒片" target="_self"><img class="pic loading-white loading" src="images/about-portrait-sepia.jpg" alt="寒塘渡月"></a>
+        		<div class="intro">
+	        		<h2 class="sig" title="黑糖"></h2>
+	        		<p class="p1">
+		        		1987-?，金陵人，客杭州。官至九品司码，自由影人。<br>
+		        		偷闲慢骑苏堤，树影静，湖风清，月华凉。<br>
+		        		堤畔择亭小坐，或携己观澜呓语，或携<a href="http://www.douban.com/photos/album/34019569/" title="G2 & QL17 & 500C/M & iPhone & 500D">机</a>捕风捉影。<br>
+		        		四时相宜，不改其乐。
+	        		</p>
+	        		<p class="p2">影以志之。</p>
+	        		<p class="contact">
+		        		<a href="http://weibo.com/ferrry" title="新浪微博">&#64;寒塘渡月</a>
+		        		<a href="http://www.zhihu.com/people/c9h10n2o" title="知乎">知</a>
+		        		<a href="http://lofter.sometime.me" title="LOFTER.sometime.me">L</a>
+		        		<a href="http://www.inkcn.com" title="小林-数码生存 inkcn.com">林</a><br>
+		        		<a class="no-underline" href="mailto:someone&#64;sometime.me" title="Q:365458655" target="_self">someone&#64;sometime.me</a>
+	        		</p>
+	        	</div>
+    		</div>
+        </div>
+        
+        <div id="bd">
+        
+        	<script id="tmpl-roll" type="text/tmpl">
+		        <div data-id="${id}" data-folder="${folder}" data-title="${title}" class="roll">
+
+		        	{{each blocks}}
+		        	
+			        	<div class="block-style-${style} block">
+			        		<span class="date">${displayDate/*_.formatDateTime(date, true)*/}</span>
+			        		
+			        		{{each tiles}}
+			        		
+								{{if typeof link != 'undefined'}}
+									<a href="${link}" target="_blank">
+								{{/if}}
+								
+									<div ${ id && 'data-id=' + id } data-type="${type}" class="tile-${tileNo} tile-${type} tile ${ type != 'words' && type != 'text' ? 'loading' : '' }">
+											
+										{{if type == 'words'}} {{html text}}
+										
+										{{else}}
+											
+											<div class="title-{{= {'1': 'm', 'words': 'xs'}[style.split('-')[0]] || 's' }} title clearfix">
+												<div class="txt">${title}</div>
+												<div class="btn-vote">${ votes || '' }</div>
+											</div>
+											
+											{{if type == 'text'}}
+												<div class="body">{{html text.body}}</div>
+												{{if text.fade}}<div class="fade-mask"></div>{{/if}}
+												
+											{{else}}
+												<img class="pic" src="images/blank.gif" data-lazysrc="gallery/${ style == '1' && type == 'image' ? 'large' : 'thumbs' }/${folder}/${file}.jpg" alt="${title}">
+												{{if type == 'video'}}
+													<div class="btn-play"></div>
+												{{/if}}
+											{{/if}}
+											
+										{{/if}}
+													
+									</div>
+					
+								{{if typeof link != 'undefined'}}
+									</a>
+								{{/if}}
+
+							{{/each}}
+				        		
+						</div>
+							
+					{{/each}}
+
+		        </div>
+        	</script>
+        	
+			<script id="tmpl-detail" type="text/tmpl">
+				<div id="detail" data-id="${id}" data-type="${type}">
+					
+					<div class="slide-area l" title="昨昔"></div>
+					<div class="slide-area r" title="明日"></div>
+					
+					<div class="content">
+						<span class="date">${date}</span>
+						
+						<div class="tile-${type} tile ${ type != 'words' && type != 'text' ? 'loading-white loading' : '' }">
+											
+								{{if type == 'words'}} {{html text}}
+								
+								{{else}}
+								
+									<div class="title-s title clearfix">
+										<div class="txt">${title}</div>
+										<div class="btn-vote">${ votes || '' }</div>
+									</div>
+									
+									{{if type == 'text'}}
+										<div class="body">{{html body}}</div>
+										
+									{{else}}
+										{{if type == 'video'}}
+											{{if $item.swf}}
+												<embed class="video" src="${link}" allowFullScreen="true" quality="high" type="application/x-shockwave-flash">
+												</embed>
+											{{else}}
+												{{if $item.videoTag}}
+													<video class="video" controls autoplay>
+													  <source src="gallery/large/${$item.folder}/${file}.mp4" type="video/mp4">
+													</video>
+												{{else}}
+													<embed class="video" src="gallery/large/${$item.folder}/${file}.mp4" type="video/mp4" scale="tofit" controls controller autoplay autostart>
+													</embed>
+												{{/if}}
+											{{/if}}
+										{{else}}
+											<img class="pic" src="gallery/large/${$item.folder}/${file}.jpg" alt="${title}">
+										{{/if}}
+										
+										<div class="story">{{html story}}</div>
+									{{/if}}
+									
+								{{/if}}
+										
+						</div>
+						
+						<ul class="comments clearfix">
+							<li class="post">
+								<p class="something">
+									<textarea name="something" maxlength="500"></textarea>
+								</p>
+								<p class="hdn sig candara">
+									<button class="btn-submit">
+										${_.MOBILE ? '发 送' : 'shift + enter'}
+									</button>
+									<input name="someone" type="text" maxlength="10" placeholder="by" title="昵称"><input name="somewhere" type="url" maxlength="200" placeholder="http://" title="主页"><input name="email" type="email" maxlength="50" placeholder="@" title="邮箱(不公开)"> - ${_.formatDate()}
+								 </p>
+							 </li>
+							<!-- comments -->
+							<li class="recalling loading-gray loading"></li>
+							<li class="hdn bof">- BOF -</li>
+							<!-- 加载完全部评论后替换loading, 同时代表全文BOF -->
+						</ul>
+									
+					</div>
+				</div>
+			</script>
+
+			<script id="tmpl-detail-comment" type="text/tmpl">
+				<li class="comment">
+					<p class="something">
+						{{html _.encodeHtml(something ,true)}}
+					</p>
+					<p class="sig candara">
+						{{if somewhere}}
+							<a href="${somewhere}" title="${someplace}">${someone || '过客'}</a> - ${_.formatDateTime(sometime)}
+						{{else}}
+							<span title="${someplace}">${someone || '过客'}</span> - ${_.formatDateTime(sometime)}
+						{{/if}}
+					 </p>
+				</li>
+			</script>
+			
+	        <div class="recalling">
+	        	<span class="loading-gray loading">回忆中</span>
+	        	<!--<span class="loading-dots">...</span>-->
+	        </div>
+
+        </div>
+        
+        <div id="ft">
+        	<div class="sig"></div>
+        	<div class="cpy"><span class="cpy-icon">&copy;</span> 1987-<span class="now">2013</span> 寒塘渡月</div>
+		</div>
+	</div>
+
+	<div id="fn-panel" class="hdn2">
+		<div class="rewinder btn hdn2" title="倒片">
+			<div class="icon"></div>
+			<div class="jplayer"></div>
+		</div>
+		
+		<div class="discman btn hdn" title="FM 87.916MHz">
+			<div class="icon"></div>
+			<div class="jplayer"></div>
+		</div>
+		
+		<a href="/rss">
+			<div class="rss btn" title="预订明晚的月光">
+				<div class="icon"></div>
+			</div>
+		</a>
+	</div>
+
+<!-- boot -->
+<script src="js/gallery/seajs/2.1.1/sea.js" id="seajsnode"></script>
+<script src="js/gallery/seajs/config.js"></script>
+<script>seajs.use('./js/sometime/init');</script>
+</body>
+</html>
+<!-- तद्यथाकाशे-तारका तिमिरं दीपो मायावश्याय बुद्बुदम्।स्वप्नं च विद्युदभ्रं च एवं द्रष्टव्य संस्कृतम्॥ -->

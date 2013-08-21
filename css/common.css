@@ -1,0 +1,372 @@
+@charset "utf-8";
+
+/* reset */
+
+html{
+	color: #000;
+	background: #fff;
+}
+body,
+div,
+dl,
+dt,
+dd,
+ul,
+ol,
+li,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+pre,
+code,
+form,
+fieldset,
+legend,
+input,
+textarea,
+button,
+p,
+blockquote,
+th,
+td {
+	margin: 0;
+	padding: 0;
+}
+table {
+	border-collapse: collapse;
+	border-spacing: 0;
+}
+fieldset,
+img {
+	border: 0;
+}
+address,
+caption,
+cite,
+code,
+dfn,
+em,
+strong,
+th,
+var {
+	font-style: normal;
+	font-weight: normal;
+}
+li {
+	list-style: none;
+}
+caption,
+th {
+	text-align: left;
+}
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+	font-size: 100%;
+	font-weight: normal;
+}
+q:before,
+q:after {
+	content: '';
+}
+abbr,
+acronym {
+	border: 0;
+	font-variant: normal;
+}
+/* to preserve line-height and selector appearance */
+sup {
+	vertical-align: text-top;
+}
+sub {
+	vertical-align: text-bottom;
+}
+input,
+textarea,
+select {
+	font-family: inherit;
+	font-size: inherit;
+	font-weight: inherit;
+}
+/* to enable resizing for IE */
+input,
+textarea,
+select {
+	*font-size: 100%;
+}
+/* because legend doesn't inherit in IE */
+legend {
+	color: #000;
+}
+
+/* hide focus border */
+:focus {
+	outline: 0;
+/*	hide A and textbox focus outline */
+}
+::-moz-focus-inner {
+	border: 0;
+/*	hide button focus in FF */
+}
+
+
+/* common */
+
+html {
+	overflow-x: hidden;
+	overflow-y: scroll;
+	-webkit-user-select: text;
+	-moz-user-select: text;
+	-ms-user-select: text;
+	user-select: text;
+}
+body, table, input, textarea {
+	color: #999;
+	font: 12px Helvetica, Hei, SimSun;
+/*	for EN & CN/mac & CN/win */
+}
+a {
+	color: #999;
+	text-decoration: none;
+	border-bottom: 1px solid #ccc;
+	-webkit-transition: all .3s ease-in-out;
+	-moz-transition: all .3s ease-in-out;
+	-o-transition: all .3s ease-in-out;
+	transition: all .3s ease-in-out;
+}
+a.no-underline {
+	border-bottom: none;
+}
+a:hover {
+	color: #666;
+}
+img, button {
+	display: block;
+}
+p {
+	text-indent: 0;
+	margin: 0;
+}
+strong, em {
+	font-weight: bold;
+}
+button,
+textarea,
+/*input[type=button],
+input[type=submit],
+input[type=text],*/
+input {
+	background: none;
+	border: 1px solid #999;
+}
+textarea {
+	overflow: auto;
+}
+
+::-moz-selection,
+::selection {
+	color: #fff;
+	background: #ba3338;
+}
+::-webkit-input-placeholder {
+	opacity: .8;
+}
+.placeholder,
+:-moz-placeholder {
+	opacity: .8;
+}
+
+.clearfix:after {
+	display: block;
+	visibility: hidden;
+	clear: both;
+	height: 0;
+	content: ".";
+}
+.clearfix {
+	display: inline-block;
+	
+	_height: 1px;
+	zoom: 1;
+}
+*html .clearfix {
+	height: 1%;
+}
+*+html .clearfix {
+	height: 1%;
+}
+.clearfix {
+	display: block;
+}
+
+.hdn {
+	display: none;
+}
+.hdn2 {
+	visibility: hidden;
+}
+.hdn3 {
+	opacity: 0;
+	
+	filter: alpha(opacity=0);
+}
+
+.antialias,
+.antialias a {
+	color: #666;
+	-webkit-font-smoothing: antialiased;
+	-moz-font-smoothing: antialiased;
+	-o-font-smoothing: antialiased;
+	font-smoothing: antialiased;
+}
+.antialias a:hover {
+	color: #333;
+}
+.no-antialias,
+.no-antialias a {
+	color: #999;
+	-webkit-font-smoothing: none;
+	-moz-font-smoothing: none;
+	-o-font-smoothing: none;
+	font-smoothing: none;
+}
+.no-antialias a:hover {
+	color: #666;
+}
+
+.blur {
+/*	-webkit-filter: blur(5px) grayscale(.3);*/
+	-webkit-filter: blur(5px);
+}
+
+/* zoom & fade-out fx */
+.ghost-zoom {
+	z-index: 10;
+	-webkit-transition: all .5s ease-in-out;
+	-moz-transition: all .5s ease-in-out;
+	-o-transition: all .5s ease-in-out;
+	transition: all .5s ease-in-out;
+}
+.ghost-zoom.gz-active {
+	-webkit-transform: scale(1.2);
+	-moz-transform: scale(1.2);
+	-o-transform: scale(1.2);
+	transform: scale(1.2);
+	opacity: 0;
+}
+/*.ghost-zoom {
+	z-index: 10;
+	-webkit-animation: ghost-zoom .5s ease-in-out;
+	-moz-animation: ghost-zoom .5s ease-in-out;
+	animation: ghost-zoom .5s ease-in-out;
+}
+@-webkit-keyframes ghost-zoom {
+	0% { -webkit-transform: scale(1); opacity: 1; }
+	100% { -webkit-transform: scale(1.2); opacity: 0; }
+}
+@-moz-keyframes ghost-zoom {
+	0% { -webkit-transform: scale(1); opacity: 1; }
+	100% { -webkit-transform: scale(1.2); opacity: 0; }
+}
+@keyframes ghost-zoom {
+	0% { -webkit-transform: scale(1); opacity: 1; }
+	100% { -webkit-transform: scale(1.2); opacity: 0; }
+}*/
+
+
+#darkroom {
+	position: fixed;
+	z-index: 100;
+	left: 0;
+	top: 0;
+	width: 100%;
+	height: 100%;
+	background-color: #000;
+	opacity: 0;
+	cursor: pointer;
+	-webkit-transition: opacity .5s ease-in-out, background-color .5s;
+	-moz-transition: opacity .5s ease-in-out, background-color .5s;
+	-o-transition: opacity .5s ease-in-out, background-color .5s;
+	transition: opacity .5s ease-in-out, background-color .5s;
+	
+	_position: absolute;
+	filter: alpha(opacity=85)\9;
+}
+#darkroom.enter {
+	opacity: .85;
+}
+#darkroom.light-on {
+	background-color: #fff;
+	
+	filter: alpha(opacity=93)\9;
+}
+#darkroom.light-on.enter {
+	opacity: .93;
+}
+/* animation version */
+/*#darkroom {
+	position: fixed;
+	z-index: 100;
+	left: 0;
+	top: 0;
+	width: 100%;
+	height: 100%;
+	background-color: #000;
+
+	_position: absolute;
+	filter: alpha(opacity=90)\9;
+}
+#darkroom.enter {
+	-webkit-animation: enter-darkroom .5s ease-in-out;
+	-moz-animation: enter-darkroom .5s ease-in-out;
+	animation: enter-darkroom .5s ease-in-out;
+}
+#darkroom.exit {
+	-webkit-animation: enter-darkroom .5s ease-in-out alternate;
+	-moz-animation: enter-darkroom .5s ease-in-out alternate;
+	animation: enter-darkroom .5s ease-in-out alternate;
+}
+@-webkit-keyframes enter-darkroom {
+	0% { opacity: 0 } 100% { opacity: .9 }
+}
+@-moz-keyframes enter-darkroom {
+	0% { opacity: 0 } 100% { opacity: .9 }
+}
+@keyframes enter-darkroom {
+	0% { opacity: 0 } 100% { opacity: .9 }
+}
+#darkroom.light-on {
+	background-color: #fff;
+
+	filter: alpha(opacity=95)\9;
+}*/
+
+.loading {
+	background: url('../images/loading-black.gif') no-repeat center 61.8%;
+}
+.loading-white {
+	background-image: url('../images/loading-white.gif');
+}
+.loading-gray {
+	background-image: url('../images/loading-gray.gif');
+}
+.loading-dots {
+	text-align: left;
+	letter-spacing: 0;
+	display: inline-block;
+	width: 3em;
+}
+.candara,
+.candara * {
+	font-family: Candara;
+}
+.cpy-icon {
+	font-size: 1.1em;
+}
+
