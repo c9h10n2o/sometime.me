@@ -2,7 +2,7 @@
 include 'common/common.php';
 include 'common/conn.php';
 include 'common/gps/gps.php';
-include 'common/mail/send.php';
+// include 'common/mail/send.php';
 
 $tile_id = empty($_REQUEST['id']) ? exit('{}') : (int)$_REQUEST['id'];
 
@@ -89,7 +89,7 @@ else {
 	$rs_blocks->close();
 	$rs_rolls->close();
 
-	send_mail($mail_subject, $mail_body, '寒塘渡月', ['someone@sometime.me', '寒塘渡月'], ['tara@sometime.me', '木樨']);
+	// send_mail($mail_subject, $mail_body, '寒塘渡月', ['someone@sometime.me', '寒塘渡月'], ['trash@sometime.me', '木樨']);
 }
 ?>
 
