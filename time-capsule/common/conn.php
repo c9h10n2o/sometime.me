@@ -1,12 +1,12 @@
 <?php
 
-mysql_connect('127.0.0.1', 'root', 'root');
-mysql_select_db('timeflow');
-//mysql_connect('sql4.mysql.sitecname.com', 'sq_hantang', '3edc4rfv5tgb');
-//mysql_select_db('sq_hantang');
+$mysqli = new mysqli('127.0.0.1', 'root', 'root', 'timeflow');
+// $mysqli = new mysqli('180.178.33.76', 'a1112221456', '3edc4rfv5tgb', 'a1112221456');
 
-mysql_query('set names utf8');
-//mysql_query('set character_set_client=utf8');
-//mysql_query('set character_set_results=utf8');
+if ($mysqli->connect_errno) http_response_code(500);
+
+$mysqli->query('set names utf8');
+// $mysqli->query('set character_set_client=utf8');
+// $mysqli->query('set character_set_results=utf8');
 
 ?>

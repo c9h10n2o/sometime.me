@@ -8,13 +8,13 @@ define(function(require, exports) {
 //	var _ = require('common')
 //	,	$ = require('jquery');
 	
-	if(_.IE <= 6) require('$.belated-png')($);
+	if (_.IE < 7) require('$.belated-png')($);
 
 	exports.init = function() {
 		if (_.IE) {
 			switch(_.BMAJORVER) {
 				case 6:
-					_.$WIN.on('scroll', function() {
+					_.$W.on('scroll', function() {
 						$('#fn-panel').hide();
 						setTimeout("$('#fn-panel').show()", 1500);
 					});
@@ -24,8 +24,8 @@ define(function(require, exports) {
 			}
 			$('#about, #ft .cpy')
 			.hover(
-				function() { $(this).animate({opacity: 1}, _.IE <= 6 ? 0 : 800) }
-			,	function() { $(this).animate({opacity: 0}, _.IE <= 6 ? 0 : 800) }
+				function() { $(this).animate({opacity: 1}, _.IE < 7 ? 0 : 800) }
+			,	function() { $(this).animate({opacity: 0}, _.IE < 7 ? 0 : 800) }
 			);
 			if (_.IE > 6)
 				$('#fn-panel .btn')
@@ -33,7 +33,7 @@ define(function(require, exports) {
 					function() { $(this).animate({opacity: 1}, 500) }
 				,	function() { $(this).animate({opacity: .5}, 500) }
 				);
-			if (_.IE <= 6)
+			if (_.IE < 7)
 				$('#fn-panel .btn .icon').fixPng();
 		}
 	};

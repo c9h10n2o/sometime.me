@@ -9771,9 +9771,6 @@ if ( typeof module === "object" && module && typeof module.exports === "object" 
 	// upon in the Node module world.
 	module.exports = jQuery;
 } else {
-	// Otherwise expose jQuery to the global object as usual
-	window.jQuery = window.$ = jQuery;
-
 	// Register as a named AMD module, since jQuery can be concatenated with other
 	// files that may use define, but not via a proper concatenation script that
 	// understands anonymous AMD modules. A named AMD is safest and most robust
@@ -9783,6 +9780,10 @@ if ( typeof module === "object" && module && typeof module.exports === "object" 
 	// to call noConflict to hide this version of jQuery, it will work.
 	if ( typeof define === "function" ) {
 		define( "jquery", [], function () { return jQuery; } );
+	}
+	else {
+		// Otherwise expose jQuery to the global object as usual
+		window.jQuery = window.$ = jQuery;
 	}
 }
 

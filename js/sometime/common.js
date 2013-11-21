@@ -1,4 +1,4 @@
-/* Define myUnderScore: constants & common functions & prototypes
+/* Define myUnderscore: constants & common functions & prototypes
  * Coded by c9h10n2o
  * @preserve http://sometime.me
  */
@@ -6,18 +6,18 @@
 define(function(require, exports, module) {
 
 	var _ = {};
-	
-	require('$.migrate');
+
+	require('$.migrate')($, window);
 
 //	dev mode flag
-	_.DEBUG = location.search.toLowerCase().indexOf('debug') >= 0;
+	_.DEBUG = location.search.toLowerCase().indexOf('dev') >= 0;
 
 //	constants
 	
 	var ua = navigator.userAgent.toLowerCase();
 
 	_.MAC = ua.indexOf('macintosh') + 1 || undefined;
-	_.WIN = ua.indexOf('windows') + 1 || undefined;
+	_.MSWIN = ua.indexOf('windows') + 1 || undefined;
 	
 	_.BVER = $.browser.version;
 	_.BMAJORVER = parseInt(_.BVER);
@@ -28,29 +28,38 @@ define(function(require, exports, module) {
 	_.CHROME = (ua.indexOf('chrome') + 1 || undefined) && _.BMAJORVER;
 	_.SAFARI = $.browser.safari && _.BMAJORVER;
 	_.MOZ = $.browser.mozilla && _.BMAJORVER;
+	_.OPERA = $.browser.opera && _.BMAJORVER;
 	_.IE = $.browser.msie && _.BMAJORVER;
 	
+	_.VENDOR =
+	   _.WEBKIT && '-webkit-'
+	|| _.MOZ && '-moz-'
+	|| _.OPERA && '-o-'
+	|| _.IE > 8 && '-ms-'
+	|| '';
+
 	_.MOBILE = ua.indexOf('mobile') > 0;
 	_.IPHONE = ua.indexOf('iphone') > 0;
 	_.IPAD = ua.indexOf('ipad') > 0;
 	_.IOS = _.IPHONE || _.IPAD;
 	
-	_.WIN = window;
+	_.W = window;
 	_.D = document;
 	_.DE = _.D.documentElement;
 	_.BD = _.D.body;
 	_.PAGESCROLL = _.IE || _.MOZ ? _.DE : _.BD;
 //	page scroll container
 	
-	_.$WIN = $(_.WIN);
+	_.$W = $(_.W);
 	_.$D = $(_.D);
 	_.$DE= $(_.DE);
 	_.$BD = $(_.BD);
 	_.$PAGESCROLL = $(_.PAGESCROLL);
 
-	_.HTML5 = !_.IE || _.MOBILE || _.IE >= 9;
-	_.VIDEO = _.D.createElement('video').canPlayType
-	&& _.D.createElement('video').canPlayType('video/mp4');
+	_.HTML5 = !_.IE || _.MOBILE || _.IE > 8;
+	_.CANVAS = !!_.D.createElement('canvas').getContext;
+	_.AUDIO = !!$('<audio>')[0].canPlayType;
+	_.VIDEO = !!$('<video>')[0].canPlayType;
 
 	_.SERVER = '';
 //	http://sometime.me
@@ -58,7 +67,7 @@ define(function(require, exports, module) {
 //	calculate width of scrollbar
 	_.SCROLLBARW = (function() {
 		var	docW = _.BD.offsetWidth
-		,	winW = _.WIN.innerWidth || _.DE.offsetWidth;
+		,	winW = _.W.innerWidth || _.DE.offsetWidth;
 //			_.DE.offsetWidth for IE 8-
 
 		return winW - docW || 20;
@@ -106,7 +115,7 @@ define(function(require, exports, module) {
 		var data = $(uiEl).tmplItem().data;
 		return key ? data[key] : data;
 	};
-	
+
 //	compute DOM element visibility
 	_.isVisible = function(uiEl, tolerance, uiContainer) {
 		var $uiEl = $(uiEl).filter(':visible')
@@ -118,7 +127,7 @@ define(function(require, exports, module) {
 		tolerance = tolerance ? tolerance : 0;
 		
 		elT = _.getClientY($uiEl, uiContainer);
-		topDist = $(uiContainer || _.WIN).height() - elT;
+		topDist = $(uiContainer || _.W).height() - elT;
 		btmDist = elT + $uiEl.height();
 
 		return elT > 0 && topDist > -tolerance ||
@@ -200,7 +209,7 @@ define(function(require, exports, module) {
 		? val
 		: val ? val.split(',') : [];
 	};
-	
+
 	_.setCookieItem = function(key, val, action) {
 		var origVal = _.getCookieDict()[key]
 		,	origVals = origVal ? origVal.split(',') : []
@@ -298,15 +307,15 @@ define(function(require, exports, module) {
 		
 		return dateRangeStr.join(separators[1]);
 	};
-		
+	
 	_.formatDate = function(date, separator) {
 		date = date ? new Date(date) : new Date;
 		separator = separator || '.';
-		
+
 		return [date.getFullYear(), date.getMonth() + 1, date.getDate()]
 		.join(separator);
 	};
-	
+
 	_.formatTime = function(date, separator) {		
 		date = date ? new Date(date) : new Date;
 		separator = separator || ':';
@@ -348,12 +357,12 @@ define(function(require, exports, module) {
 			_uiEl.setSelectionRange(len, len);
 		}
 		else if (_uiEl.createTextRange) {
-			with(_uiEl.createTextRange()){
-				collapse(true);
-				moveStart('character', start);
-				moveEnd('character', end);
-				select();
-			}
+			var tr = _uiEl.createTextRange();
+			
+			tr.collapse(true);
+			tr.moveStart('character', start);
+			tr.moveEnd('character', end);
+			tr.select();
 		}
 	};
 	
@@ -463,9 +472,9 @@ define(function(require, exports, module) {
 	_.ajaxForm = function(uiForm, succ, fail) {
 		var $uiForm = $(uiForm)
 		,	_uiForm = $uiForm[0];
-		
+
 		if (!_uiForm) return;
-		
+
 		$.ajax({
 			url: _uiForm.action
 		,	type: _uiForm.method ? _uiForm.method : 'POST'
@@ -485,7 +494,7 @@ define(function(require, exports, module) {
 		if (!key) return;
 		
 		domain = location.hostname;
-		domainValid = exactMatch ? domain == key: domain.indexOf(key) >= 0;
+		domainValid = exactMatch ? domain == key : domain.indexOf(key) >= 0;
 		redirUrl = domainValid
 		? location.href
 		: 'http://' + key + location.pathname + location.search + location.hash;

@@ -18,5 +18,4 @@ function gps($ip) {
 	
 //	TODO filter no-result / invalid IP
 }
-//echo gps('127.0.0.1');
 ?>

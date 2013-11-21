@@ -2,7 +2,7 @@
 
 /* reset */
 
-html{
+html {
 	color: #000;
 	background: #fff;
 }
@@ -158,9 +158,9 @@ strong, em {
 }
 button,
 textarea,
-/*input[type=button],
-input[type=submit],
-input[type=text],*/
+/*input[type='button'],
+input[type='submit'],
+input[type='text'],*/
 input {
 	background: none;
 	border: 1px solid #999;
@@ -205,13 +205,13 @@ textarea {
 	display: block;
 }
 
-.hdn {
+.hidden, [hidden=''] {
 	display: none;
 }
-.hdn2 {
+.invisible, [hidden='invisible'] {
 	visibility: hidden;
 }
-.hdn3 {
+.transparent, [hidden='transparent'] {
 	opacity: 0;
 	
 	filter: alpha(opacity=0);
@@ -271,6 +271,14 @@ textarea {
 	100% { -webkit-transform: scale(1.2); opacity: 0; }
 }
 @-moz-keyframes ghost-zoom {
+	0% { -webkit-transform: scale(1); opacity: 1; }
+	100% { -webkit-transform: scale(1.2); opacity: 0; }
+}
+@-o-keyframes ghost-zoom {
+	0% { -webkit-transform: scale(1); opacity: 1; }
+	100% { -webkit-transform: scale(1.2); opacity: 0; }
+}
+@-ms-keyframes ghost-zoom {
 	0% { -webkit-transform: scale(1); opacity: 1; }
 	100% { -webkit-transform: scale(1.2); opacity: 0; }
 }
@@ -338,6 +346,12 @@ textarea {
 @-moz-keyframes enter-darkroom {
 	0% { opacity: 0 } 100% { opacity: .9 }
 }
+@-o-keyframes enter-darkroom {
+	0% { opacity: 0 } 100% { opacity: .9 }
+}
+@-ms-keyframes enter-darkroom {
+	0% { opacity: 0 } 100% { opacity: .9 }
+}
 @keyframes enter-darkroom {
 	0% { opacity: 0 } 100% { opacity: .9 }
 }
@@ -362,6 +376,7 @@ textarea {
 	display: inline-block;
 	width: 3em;
 }
+
 .candara,
 .candara * {
 	font-family: Candara;

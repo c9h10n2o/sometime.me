@@ -2,6 +2,7 @@ seajs.config({
 //	base: '/js'
 	paths: {
 		'sometime': '/js/sometime'
+	,	'widgets': '/js/sometime/widgets'
 	,	'css': '/css'
 	}
 ,	alias: {
@@ -41,4 +42,4 @@ seajs.on('exec', function(module) {
    else if (module.uri === seajs.resolve('common')) {
       window._ = module.exports;
    }
-})
+});

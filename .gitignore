@@ -1,4 +1,7 @@
 *.sql
+*.sqlite3
+*.dat
+disc/*
 gallery/large/*
 gallery/thumbs/*
 time-capsule/data

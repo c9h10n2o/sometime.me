@@ -10,6 +10,8 @@
 
 define(function(require, exports) {
 
+// 	var artmpl = require('artmpl');
+	
 	require('css/block-styles.css');
 	
 	require('$.tmpl')($);
@@ -20,7 +22,7 @@ define(function(require, exports) {
 			api: {
 				_get: function(apiName) {
 					return this._server + this._base + this[apiName]
-					+ (_.DEBUG ? '?debug=1' : '');
+					+ (_.DEBUG ? '?dev=1' : '');
 				}
 			,	_server: _.SERVER
 			,	_base: '/time-capsule'
@@ -38,7 +40,7 @@ define(function(require, exports) {
 			}
 			
 		,	bookmark: ''
-//			#!123[~456][/789]
+//			#123[~456][/789]
 //			load specified roll(s)/detail(optional)
 //			123 = roll id in db
 		,	bufferRolls: _.IE < 8 ? 1 : 2
@@ -80,18 +82,15 @@ define(function(require, exports) {
 			var _bookmark = [];
 			
 			_bookmark = config.bookmark.split('/');
-			_bookmark[0] = _bookmark[0].split('~');
 //			parse the raw bookmark string
 			bookmark = {
 				enabled: true
-			,	startRollId: _bookmark[0][0]
-			,	endRollId: _bookmark[0][1] || _bookmark[0][0]
+			,	rollId: _bookmark[0]
 			,	detailId: _bookmark[1] || ''
-			,	isRange: !!_bookmark[0][1] && _bookmark[0][1] != _bookmark[0][0]
 			};
 		}
 
-		_.$WIN
+		_.$W
 		.on('scroll', floatTitle)
 		.on('scroll.detectUserScroll', function() { userScrolled = true })
 //		disable scroll2body
@@ -99,7 +98,7 @@ define(function(require, exports) {
 //		stop scroll2body animation when user scrolling
 		.on('resize', snapDate)
 		.on('beforeunload', function() { location.hash = '' });
-//		防止刷新时进入固定专辑（webkit不支持，FF支持但无效）
+//		防止刷新时进入固定专辑（webkit不支持，FF支持但无效，IE有效）
 		
 //		.on('hashchange', function() {
 //			lastHashDetailId
@@ -118,11 +117,11 @@ define(function(require, exports) {
 		}
 		, _.IE < 8 ? 1600 : 800);
 
-		setInterval(updateURLBookmark, _.IE < 8 ? 2000 : 1000);
+		setInterval(updateURLBookmark, _.IE < 8 ? 2e3 : 1e3);
 		
 //		require('widgets/loading-animator').init();
 		_.bufferImgs(
-			_.IE <= 6
+			_.IE < 7
 			? ['ie-icn-btn-vote-red-on-black.gif', 'ie-icn-btn-vote-red-on-gray.gif']
 			: 'icn-btn-vote-red.png'
 		);
@@ -135,21 +134,12 @@ define(function(require, exports) {
 
 //		ajax callback - succ
 		function succ(data) {
-			if (bookmark.isRange) {
-				var startRollIndex = -1;
-				$.grep(data.rolls, function(v,i) {
-					if(v.id == bookmark.startRollId) startRollIndex = i;
-				});
-				if (startRollIndex >= 0) data.rolls = data.rolls.slice(0, startRollIndex + 1);
-//				reduce data.rolls by bookmark range limit
-			}
-
 //			fuck IE6
-			if (isFirstLoad && _.IE <= 6 && !bookmark.enabled) {
+			if (isFirstLoad && _.IE < 7 && !bookmark.enabled) {
 				data.rolls.unshift({
 					id: 0
 				,	offset: 0
-				,	title: "从今天起，告别您的IE6！"
+				,	title: '从今天起，告别您的IE6！'
 				,	folder: 'misc'
 				,	blocks: [{
 						style: '1'
@@ -169,35 +159,29 @@ define(function(require, exports) {
 				});
 			}
 			
-			printRolls(data.rolls);
-//			冲印底片
+			if (data.rolls[0]) {
+				printRolls(data.rolls);
+//				冲印底片
+				
+				!data.rolls[0].id && data.rolls.shift();
+//				fuck完事，恢复原状，不影响offset计算
 			
-			!data.rolls[0].id && data.rolls.shift();
-//			fuck完事，恢复原状，不影响offset计算
-			
-			data.rolls.length
-			&&	(!bookmark.enabled
+				!bookmark.enabled
 				? nextRollOffset += data.rolls.length
-				: bookmark.isRange
-				  ? nextRollOffset = data.rolls[data.rolls.length - 1].offset + 1
-				  : nextRollOffset += data.rolls[0].offset ? 0 : isFirstLoad ? 1 : data.rolls.length)
-//				  single bookmark & not the latest roll
-			
-			retryCount = 0;
-			
-//			specified roll
-			if (isFirstLoad && bookmark.enabled) {
-				if (!data.rolls.length) {
-//				not found
-					alert('未能忆起指定的专辑(#' + config.bookmark.split('/')[0] + ')。\n\n也许，她已被遗忘在时光深处，相见不如怀念 :)');
-					location = '/';
-				}
+				: nextRollOffset += data.rolls[0].offset ? 0 : 1;
+//				  not the latest roll
 			}
-			
+//			bookmarked roll not found
+			else if (isFirstLoad && bookmark.enabled) {
+				alert('未能忆起指定的专辑 #' + bookmark.rollId.replace(/_/g, ' ') + '\n\n也许，她已被遗忘在时光深处，相见不如怀念 :)');
+				location = '/';
+			}
+
+			retryCount = 0;
+
 //			hit BOF
 			if (data.rolls.length < amount
-			|| data.count < nextRollOffset + 1
-			|| bookmark.isRange && data.rolls[data.rolls.length - 1].id == bookmark.startRollId) {
+			|| data.count < nextRollOffset + 1) {
 //				$('#bd>.recalling').html('如果，人生可以如此倒片，<span class="symbols">。</span>');
 				$('#bd>.recalling').html('如果，人生可以如此倒片，');
 				hitBof = true;
@@ -205,15 +189,17 @@ define(function(require, exports) {
 
 			if (isFirstLoad){
 				setTimeout(function() {
-					!(_.IE <= 6) ? scroll2Body(loadDetailBookmark) : loadDetailBookmark();
+					!(_.$DE.hasClass('theme-night') || _.IE < 7)
+					? scroll2Body(loadDetailBookmark)
+					: loadDetailBookmark();
 				}
-				, _.IE < 9 ? _.IE < 8 ? 3000 : 1500 : 1000);
+				, _.IE < 9 ? _.IE < 8 ? 3e3 : 1500 : 1e3);
 //				delay to boost animation
 				isFirstLoad = false;
 			}
 			
 			document.title = '断章 - '
-				+ parseInt((new Date - new Date(data.birthday)) / 1000 / 3600 / 24) + '天，'
+				+ parseInt((new Date - new Date(data.birthday)) / 1e3 / 3600 / 24) + '天，'
 				+ data.moments + '个瞬间';
 		}
 		
@@ -226,7 +212,7 @@ define(function(require, exports) {
 					retryCount++;
 					recallRolls();
 				}
-				, 2000);
+				, 2e3);
 			}
 			else retryCount = 0;
 			_.ajaxError.call(this, xhr, statusText);
@@ -241,7 +227,7 @@ define(function(require, exports) {
 		
 		var amount = config.bufferRolls;
 		
-		if (new Date - loadingStartTime < 1000 || isLoading || hitBof) return;
+		if (new Date - loadingStartTime < 1e3 || isLoading || hitBof) return;
 		clearTimeout(retryTimer);
 		loadingStartTime = new Date();
 		isLoading = true;
@@ -252,12 +238,10 @@ define(function(require, exports) {
 //		,	cache: false
 		,	data: isFirstLoad && bookmark.enabled
 			? {
-				start_id: bookmark.startRollId
-			,	end_id: bookmark.endRollId
-			,	amount: amount
+				roll_id: bookmark.rollId
 			}
 //			load specified roll
-			: {							
+			: {
 				offset: nextRollOffset
 			,	amount: amount
 			}
@@ -283,9 +267,9 @@ define(function(require, exports) {
 		$uiRolls
 		.insertBefore('#bd>.recalling')
 		.find('img[data-lazysrc]').lazyload({
-			data_attribute: "lazysrc"
-		,	threshold: _.$WIN.height() / 2
-		,	effect: _.MOBILE && !_.IPAD || _.IE <= 6 ? 'show' : 'fadeIn'
+			data_attribute: 'lazysrc'
+		,	threshold: _.$W.height() / 2
+		,	effect: _.MOBILE && !_.IPAD || _.IE < 7 ? 'show' : 'fadeIn'
 		,	skip_invisible: false
 //			false required for chrome(lazy bug)
 //		,	container: window
@@ -298,11 +282,11 @@ define(function(require, exports) {
 
 		snapDate($('.date', $uiRolls));
 		$uiRolls
-		.on('click tap', '.tile', showDetail)
-		.on('click tap', '.btn-vote', vote);
+		.on('click', '.tile', showDetail)
+		.on('click', '.btn-vote', vote);
 		if (_.IPAD) $('.title', $uiRolls).css('opacity', 1);
 //		belatedPNG works but causes btn-vote unclickable
-//		if (_.IE <= 6) $('.btn-vote', $uiRolls).fixPng();
+//		if (_.IE < 7) $('.btn-vote', $uiRolls).fixPng();
 
 //		if (!_.MOBILE) {
 		if (!_.IOS) {
@@ -319,28 +303,28 @@ define(function(require, exports) {
 			_.IE && $('.tile-image, .tile-video, .tile-map', $uiRolls)
 //			.hover(
 //				function() {
-//					$('.title', this).animate({opacity: .7}, _.IE <= 6 ? 0 : 500);
+//					$('.title', this).animate({opacity: .7}, _.IE < 7 ? 0 : 500);
 //				}
 //		   	,	function() {
-//		   			$('.title', this).animate({opacity: 0}, _.IE <= 6 ? 0 : 500);
+//		   			$('.title', this).animate({opacity: 0}, _.IE < 7 ? 0 : 500);
 //		   		}
 //		   	);
 			.hover(
 				function() {
-					$('.title', this).fadeIn(_.IE <= 6 ? 0 : 500);
+					$('.title', this).fadeIn(_.IE < 7 ? 0 : 500);
 				}
 		   	,	function() {
-		   			$('.title', this).fadeOut(_.IE <= 6 ? 0 : 500);
+		   			$('.title', this).fadeOut(_.IE < 7 ? 0 : 500);
 		   		});
 			   		   
 //			patch for IE6 btn-vote fade fx
-			_.IE <= 6 && $('.btn-vote', $uiRolls)
+			_.IE < 7 && $('.btn-vote', $uiRolls)
 			.hover(
 				function() { $(this).addClass('hover') }
 		   	,   function() { $(this).removeClass('hover') });
-			   		   
+
 //			patch for IE6 PNG alpha
-			_.IE <= 6 && $('.btn-play', $uiRolls).fixPng();
+			_.IE < 7 && $('.btn-play', $uiRolls).fixPng();
 		}
 		else isLoading = false;
 		
@@ -348,7 +332,11 @@ define(function(require, exports) {
 	}
 
 	function updateTileTitleTxtW(uiTxt) {
-		var $uiTxt = $(uiTxt);
+		var $uiTxt = $(uiTxt)
+		,	$uiTitle = $uiTxt.parent('.title');
+		
+		_.IE && $uiTitle.show();
+//		IE取不到不可见元素的宽度，临时可见
 		
 		$uiTxt.css({
 			maxWidth: $uiTxt.parent('.title').width()
@@ -358,6 +346,8 @@ define(function(require, exports) {
 		});
 //		max width = title width - btn-vote width - txt padding/margin
 //		- adjustment(IMPORTANT)
+
+		_.IE && $uiTitle.hide();
 	}
 	
 	function floatTitle(uiRoll) {
@@ -368,7 +358,7 @@ define(function(require, exports) {
 		uiRoll = (uiRoll && uiRoll.target ? undefined : uiRoll) || '.roll';
 //		filter pass-in event object
 		
-		winB = _.$WIN.height();
+		winB = _.$W.height();
 		
 		$(uiRoll).each(function(i,v) {
 			var rollT = _.getClientY(v)
@@ -409,8 +399,8 @@ define(function(require, exports) {
 	function detectVisibleRolls(isMaxVisibleOnly) {
 		var _uiVisibleRolls = []
 		,	maxVisibleH = 0, _uiMaxVisibleRoll
-		,	winB = _.$WIN.height();
-			
+		,	winB = _.$W.height();
+
 		$('.roll').each(function(i,v) {
 			var	rollH = $(v).height()
 			,	rollT = _.getClientY(v)
@@ -443,29 +433,32 @@ define(function(require, exports) {
 		,	$uiCurDetail, curDetailId = ''
 		,	hash = '', title = document.title.split(' - ');
 		
+		if(_.IE < 7) return;
+//		IE6更新hash会造成明显卡顿
+		
 		$uiCurRoll = $(detectVisibleRolls(true));
 		$uiCurDetail = $('#detail:visible');
 			
 		if ($uiCurRoll[0]) {
-//			curRollId = _.getStr(patternGetId, $uiCurRoll[0].id) / 1;		
-			curRollId = $uiCurRoll.data('id') / 1 || curRollId;
+//			curRollId = _.getStr(patternGetId, $uiCurRoll[0].id);		
+			curRollId = $uiCurRoll.data('id') || curRollId;
 			curRollTitle = $uiCurRoll.data('title');
 		}
 		
 		if (curRollId && $uiCurDetail[0])
-			curDetailId = $uiCurDetail.data('id') / 1 || curDetailId;
+			curDetailId = $uiCurDetail.data('id') || curDetailId;
 
 		if(curRollTitle)
 			title.length > 2 ? title[0] = curRollTitle : title.unshift(curRollTitle);
 
-		hash = (curRollId && '#!' + curRollId) + (curDetailId && '/' + curDetailId);
+		hash = (curRollId && '#' + curRollId) + (curDetailId && '/' + curDetailId);
 
 //		hash =
 //			location.hash
-//			&& location.hash.replace(/(#!.+)\/?/i, curRollId + '/')
+//			&& location.hash.replace(/(#.+)\/?/i, curRollId + '/')
 //		||
 //			curRollId
-//			&& '#!' + curRollId;
+//			&& '#' + curRollId;
 		
 		if (hash && hash != location.hash) location.replace(hash);
 //		{
@@ -499,7 +492,7 @@ define(function(require, exports) {
 //		ajax callback  - succ
 		function succ(data) {
 			var $uiDetail;
-			
+
 			isLoadingDetail = false;
 			if (!$('#darkroom.enter')[0]) return;
 //			detail opened or darkroom closed
@@ -511,33 +504,33 @@ define(function(require, exports) {
 			,	videoTag: _.VIDEO
 			})
 			.appendTo('#bd');
-			
+
 			$('.btn-vote', $uiSrcTile).hasClass('btn-voted')
 			&& $('.btn-vote', $uiDetail).addClass('btn-voted');
 //			recover voting status via the corresponding tile
 			
 //			pause bg music
 			if(data.type == 'video' && !Discman.isPaused) {
-				Discman.off();
+				window.Discman && Discman.off();
 				isDiscmanPaused4Video = true;
 			}
 
 			$uiDetail
-			.on('click tap', '.content, .tile, .comments', function(e) {
+			.on('click', '.content, .tile, .comments', function(e) {
 //			click to slide
-//			.on('click tap', function(e) {
+//			.on('click', function(e) {
 //			click to exit
 				if (e.target == this || $(this).hasClass('tile'))
 					exitDarkroom();
 			})
-			.on('click tap', '.video', function(e) {
+			.on('click', '.video', function(e) {
 				(e.pageY - $(this).offset().top) / this.offsetHeight > .8
 				&& e.stopPropagation();
 //				don't exit when clicking on video controls(<video> only)
 			})
-			.on('click tap', '.slide-area.l', prev)
-			.on('click tap', '.slide-area.r', next)
-			.on('click tap', '.btn-vote', vote)
+			.on('click', '.slide-area.l', prev)
+			.on('click', '.slide-area.r', next)
+			.on('click', '.btn-vote', vote)
 			.children('.slide-area')
 			.css({
 				width: ($uiDetail[0].scrollWidth
@@ -546,6 +539,8 @@ define(function(require, exports) {
 			});
 			
 			_.$DE.on('keyup', function(e) {
+				if($(e.target).filter('input, textarea')[0]) return;
+
 				e.which == 37 && $('.slide-area.l:visible').trigger('click');
 				e.which == 39 && $('.slide-area.r:visible').trigger('click');
 			});
@@ -563,12 +558,12 @@ define(function(require, exports) {
 //			fade-in detail
 
 			setTimeout(function() { _.scrollIntoView($uiSrcTile) }
-			, _.IE < 8 ? 0 : 500);
+			, _.IE < 9 ? 0 : 500);
 			
 			$('#darkroom').removeClass('loading loading-white');
 			
 			$('.comments .post', $uiDetail)
-			.on('click tap', '.btn-submit', postComment)
+			.on('click', '.btn-submit', postComment)
 			.on('focus', 'textarea', function() {
 				var that = this;
 				if (!_.IE) $(this).addClass('expand');
@@ -580,18 +575,18 @@ define(function(require, exports) {
 					,	maxHeight: 559
 //					,	borderColor: '#999'
 					}
-					, _.IE <= 6 ? 0 : 300);
+					, _.IE < 7 ? 0 : 300);
 				}
 				setTimeout(function(){
 					$(that).parent('.something').siblings('.sig').fadeIn()
 					if (_.IE) _.placeholder(that);
 				}
-				, _.IE <= 6 ? 0 : 800);
+				, _.IE < 7 ? 0 : 800);
 //				$(this).parent('.something').siblings('.sig').fadeIn();
 //				setTimeout(function(){ _.scrollIntoView(this, null, $uiDetail) }
-//				, _.IE <= 6 ? 0 : 300);
+//				, _.IE < 7 ? 0 : 300);
 			})
-			.on('focus', '[type=url]', function() {
+			.on('focus', '[type="url"]', function() {
 				if (!this.value) {
 					this.value = 'http://';
 //					_.pressKey('DOM_VK_RIGHT', 39);
@@ -800,7 +795,7 @@ define(function(require, exports) {
 
 //		resume bg music
 		if(isDiscmanPaused4Video) {
-			Discman.on();
+			window.Discman && Discman.on();
 			isDiscmanPaused4Video = false;
 		}
 	}
@@ -934,7 +929,7 @@ define(function(require, exports) {
 		if (!userScrolled && delta / winH > .2) {
 			if (rollH <= winH) delta -= (winH - rollH) / 2;
 			_.$PAGESCROLL.animate({ scrollTop: delta }, 1200, function() {
-				_.$WIN.off('.detectUserScroll');
+				_.$W.off('.detectUserScroll');
 				callback && callback();
 			});
 		}
@@ -950,7 +945,7 @@ define(function(require, exports) {
 		$uiMask.off();
 		setTimeout(function() {
 			$uiMask
-			.on('click tap', exitDarkroom)
+			.on('click', exitDarkroom)
 			.on('enter', onEnter)
 			.on('hide', onExit)
 			.trigger('enter');
@@ -958,12 +953,12 @@ define(function(require, exports) {
 			_.$DE.on('keydown', function(e) { e.which == 27 && exitDarkroom() });
 //			press ESC to exit
 		}
-		, $uiMask.hasClass('enter') || _.IE < 8 ? 0 : 1000);
+		, $uiMask.hasClass('enter') || _.IE < 8 ? 0 : 1e3);
 
 		isLightOn ? $uiMask.addClass('light-on') : $uiMask.removeClass('light-on');
 		$uiMask.show();
 		setTimeout(function() { $uiMask.addClass('enter') }, 0);
-		if (_.IE > 7) $uiMask.fadeIn(1000);
+		if (_.IE > 7) $uiMask.fadeIn(1e3);
 //		fade-in mask
 
 		_.$DE.css({
@@ -987,7 +982,7 @@ define(function(require, exports) {
 			$uiMask.removeClass('enter');
 //			$uiMask.addClass('exit');
 //			css animation version
-			if (_.IE > 7) $uiMask.fadeOut(1000);
+			if (_.IE > 7) $uiMask.fadeOut(1e3);
 //			fade-out mask
 	
 			setTimeout(function() {
@@ -998,7 +993,7 @@ define(function(require, exports) {
 				});
 				if (_.MOZ) _.PAGESCROLL.scrollTop = scrollT;
 			}
-			, _.IE < 8 ? 0 : 1000);
+			, _.IE < 8 ? 0 : 1e3);
 //		});
 	}
 	
@@ -1029,5 +1024,5 @@ define(function(require, exports) {
 /********************** 写在最后 ***********************
  * 有机会亲手一针一线缝制这样一个悦目又能珍藏光阴的人生珠宝盒，
  * 是我青春里最奢侈的体验。
- * 如果你读到这一行，那是我们的缘。:)
  ************************ EOF *************************/
+window.console && window.console.log('想拆开时光机看个究竟，还是发现了它的bug？\n如果你读到这一行，那是我们的%c缘%c。:)\n\n%cतद्यथाकाशे-तारका तिमिरं दीपो मायावश्याय बुद्बुदम्।स्वप्नं च विद्युदभ्रं च एवं द्रष्टव्य संस्कृतम्॥', 'line-height: 1.5; color: #a00', 'color: #000', 'color: #aaa');

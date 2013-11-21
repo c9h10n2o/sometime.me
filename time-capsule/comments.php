@@ -12,14 +12,19 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET') {
 ?>
 
 {	
-	"count": <?php echo mysql_result(mysql_query('SELECT COUNT(*) FROM comments WHERE tile_id='.$tile_id), 0) ?>
+	"count": <?php
+		$rs_comments = $mysqli->query('SELECT id FROM comments WHERE tile_id='.$tile_id);
+		echo $rs_comments->num_rows;
+		$rs_comments->close();
+	?>
+
 ,	"comments": [
 	<?php
-	$rs_comments = mysql_query('SELECT * FROM comments WHERE tile_id='.$tile_id.' ORDER BY sometime DESC LIMIT '.$comment_start_index.', '.$comment_amount);
+	$rs_comments = $mysqli->query('SELECT * FROM comments WHERE tile_id='.$tile_id.' ORDER BY sometime DESC LIMIT '.$comment_start_index.', '.$comment_amount);
 	
 	$is_first_comment = true;
 	
-	while ($r_comment = mysql_fetch_object($rs_comments)) {
+	while ($r_comment = $rs_comments->fetch_object()) {
 		echo $is_first_comment ? '' : ',';
 		$is_first_comment = false;
 	?>
@@ -30,7 +35,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET') {
 		,	"somewhere": "<?php echo $r_comment->somewhere ?>"
 		,	"sometime": "<?php echo $r_comment->sometime ?>"
 		}
-	<?php } ?>
+	<?php }
+	$rs_comments->close() ?>
 	]
 }
 
@@ -47,15 +53,17 @@ else {
 	$ip = $_SERVER['REMOTE_ADDR'];
 	$someplace = gps($ip);
 
-	mysql_query('INSERT INTO comments (tile_id, something, someone, somewhere, email, ip, someplace) VALUES ('.$tile_id.', "'.$something.'", "'.$someone.'", "'.$somewhere.'", "'.$email.'", "'.$ip.'", "'.$someplace.'")');
-	$r_new_comment = mysql_fetch_object(mysql_query('SELECT * FROM comments ORDER BY sometime DESC'));
+	$mysqli->query('INSERT INTO comments (tile_id, something, someone, somewhere, email, ip, someplace) VALUES ('.$tile_id.', "'.$something.'", "'.$someone.'", "'.$somewhere.'", "'.$email.'", "'.$ip.'", "'.$someplace.'")');
+	$rs_comments = $mysqli->query('SELECT * FROM comments ORDER BY sometime DESC');
+	$r_this_comment = $rs_comments->fetch_object();
+	$rs_comments->close();
 ?>
 
 {
-	"someplace": "<?php echo $r_new_comment->someplace ?>"
-,	"sometime": "<?php echo $r_new_comment->sometime ?>"
+	"someplace": "<?php echo $r_this_comment->someplace ?>"
+,	"sometime": "<?php echo $r_this_comment->sometime ?>"
 }
 
 <?php } ?>
 
-<?php mysql_close() ?>
+<?php $mysqli->close() ?>

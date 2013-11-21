@@ -2,16 +2,18 @@
 include 'common/common.php';
 include 'common/conn.php';
 
-$debug = !empty($_GET['debug']);
+$dev = !empty($_GET['dev']);
 
 $tile_id = empty($_GET['id']) ? exit('{}') : (int)$_GET['id'];
 
-$r_tile = mysql_fetch_object(mysql_query('SELECT * FROM tiles WHERE id='.$tile_id));
-if (!$debug) mysql_query('UPDATE tiles SET views=views+1 WHERE id='.$tile_id);
+$rs_tiles = $mysqli->query('SELECT * FROM tiles WHERE id='.$tile_id);
+$r_tile = $rs_tiles->fetch_object();
+$rs_tiles->close();
+if (!$dev) $mysqli->query('UPDATE tiles SET views=views+1 WHERE id='.$tile_id);
 ?>
 
 {
-	"id": <?php echo $r_tile->id ?>
+	"id": <?php echo $r_tile->id ?> 
 ,	"type": "<?php echo $r_tile->type ?>"
 ,	"file": "<?php echo $r_tile->file ?>"
 ,	"link": "<?php echo $r_tile->link ?>"
@@ -27,4 +29,4 @@ else
 
 }
 
-<?php mysql_close() ?>
+<?php $mysqli->close() ?>

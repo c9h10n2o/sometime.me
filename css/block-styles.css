@@ -2,53 +2,15 @@
 
 /* block-styles */
 
-.block-style-words-weibo {
-	height: 149px;
-}
-.block-style-words-weibo .date {
-	top: 63px;
-}
-.block-style-words-weibo .title {
-	background-image: url('../images/icn-pin-white-semitrans.png');
-	background-repeat: no-repeat;
-	background-position: 128px;
-
-	background-image: url('../images/ie-icn-pin-white-semitrans-on-black.gif')\9;
-}
-.block-style-words-weibo .title .txt {
-	text-overflow: ellipsis;
-	white-space: nowrap;
-	width: 8em;
-	overflow: hidden;
-}
-.block-style-words-weibo .tile-words{
-	font-size: 1.2em;
-	border-right: 15px solid #dadada;
-/*	overflow-y: auto;*/
-	cursor: pointer;
-}
-.block-style-words-weibo .tile-1 {
-	left: 0;
-	top: 0;
-	width: 149px;
-	height: 149px;
-}
-.block-style-words-weibo .tile-2 {
-	left: 151px;
-	top: 0;
-	width: 710px;
-	height: 109px;
-	padding: 20px;
-}
-
-
-.block-style-1 .tile {
+.block-style-1 .tile-1 {
 	position: relative;
 	width: 916px;
 	min-height: 450px;
 /*  adaptive height */
+
+	_height: 450px;
 }
-.block-style-1 .tile.gz-active {
+.block-style-1 .tile-1.gz-active {
 	-webkit-transform: scale(1.1);
 	-moz-transform: scale(1.1);
 	-o-transform: scale(1.1);
@@ -206,6 +168,106 @@
 }
 
 
+.block-style-2-7 {
+	height: 305px;
+}
+.block-style-2-7 .tile-1 {
+	left: 0;
+	top: 0;
+	width: 457px;
+	height: 305px;
+}
+.block-style-2-7 .tile-2 {
+	left: 459px;
+	top: 0;
+	width: 457px;
+	height: 305px;
+}
+
+
+.block-style-2-8 {
+	height: 685px;
+}
+.block-style-2-8 .tile-1 {
+	left: 0;
+	top: 0;
+	width: 457px;
+	height: 685px;
+}
+.block-style-2-8 .tile-2 {
+	left: 459px;
+	top: 0;
+	width: 457px;
+	height: 685px;
+}
+
+
+.block-style-2-9-l {
+	height: 522px;
+}
+.block-style-2-9-l .tile-1 {
+	left: 0;
+	top: 0;
+	width: 522px;
+	height: 522px;
+}
+.block-style-2-9-l .tile-2 {
+	left: 524px;
+	top: 0;
+	width: 392px;
+	height: 522px;
+}
+
+.block-style-2-9-r {
+	height: 522px;
+}
+.block-style-2-9-r .tile-1 {
+	right: 0;
+	top: 0;
+	width: 522px;
+	height: 522px;
+}
+.block-style-2-9-r .tile-2 {
+	right: 524px;
+	top: 0;
+	width: 392px;
+	height: 522px;
+}
+
+
+.block-style-2-10-l {
+	height: 365px;
+}
+.block-style-2-10-l .tile-1 {
+	left: 0;
+	top: 0;
+	width: 549px;
+	height: 365px;
+}
+.block-style-2-10-l .tile-2 {
+	left: 551px;
+	top: 0;
+	width: 365px;
+	height: 365px;
+}
+
+.block-style-2-10-r {
+	height: 365px;
+}
+.block-style-2-10-r .tile-1 {
+	right: 0;
+	top: 0;
+	width: 549px;
+	height: 365px;
+}
+.block-style-2-10-r .tile-2 {
+	right: 551px;
+	top: 0;
+	width: 365px;
+	height: 365px;
+}
+
+
 .block-style-3-1-l {
 	height: 456px;
 }
@@ -276,7 +338,7 @@
 .block-style-3-2-l {
 	height: 713px;
 }
-.block-style-3-2-l .tile-words{
+.block-style-3-2-l .tile-words {
 	border-right: 10px solid #dadada;
 }
 .block-style-3-2-l .tile-1 {
@@ -307,7 +369,7 @@
 .block-style-3-2-r {
 	height: 713px;
 }
-.block-style-3-2-r .tile-words{
+.block-style-3-2-r .tile-words {
 	border-left: 10px solid #dadada;
 }
 .block-style-3-2-r .tile-1 {
@@ -554,7 +616,7 @@
 .block-style-6-1-l {
 	height: 1329px;
 }
-.block-style-6-1-l .tile-words{
+.block-style-6-1-l .tile-words {
 	border-right: 10px solid #dadada;
 }
 .block-style-6-1-l .tile-1 {
@@ -603,7 +665,7 @@
 .block-style-6-1-r {
 	height: 1329px;
 }
-.block-style-6-1-r .tile-words{
+.block-style-6-1-r .tile-words {
 	border-left: 10px solid #dadada;
 }
 .block-style-6-1-r .tile-1 {
@@ -647,4 +709,54 @@
 	top: 1224px;
 	width: 309px;
 	height: 83px;
+}
+
+
+.block-style-words .date {
+	top: 65px;
+}
+.block-style-words .tile-words {
+	font-size: 1.2em;
+	border-right: 15px solid #dadada;
+	cursor: pointer;
+}
+.block-style-words .tile-1 {
+	position: static;
+}
+
+.block-style-words.with-pic {
+	height: 149px;
+}
+.block-style-words.with-pic .title {
+	display: none;
+/*	background-image: url('../images/icn-pin-white-semitrans.png');
+	background-repeat: no-repeat;
+	background-position: 128px;
+
+	background-image: url('../images/ie-icn-pin-white-semitrans-on-black.gif')\9;*/
+}
+.block-style-words.with-pic .title .txt {
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	width: 8em;
+	overflow: hidden;
+}
+.block-style-words.with-pic .tile-words {
+	font-size: 1.2em;
+	border-right: 15px solid #dadada;
+	cursor: pointer;
+}
+.block-style-words.with-pic .tile-1 {
+	position: absolute;
+	left: 0;
+	top: 0;
+	width: 149px;
+	height: 149px;
+}
+.block-style-words.with-pic .tile-2 {
+	left: 151px;
+	top: 0;
+	width: 710px;
+	height: 109px;
+	padding: 20px;
 }
