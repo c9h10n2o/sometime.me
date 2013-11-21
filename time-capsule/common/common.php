@@ -17,7 +17,7 @@ function convert2html($str) {
 }
 
 // convert \r\n's to a space, and remove extra spaces
-function filterUserText($str) {
+function filter_user_text($str) {
 	if (!$str) return '';
 
 	$str = preg_replace('/(\r?\n)+/', ' ', $str);

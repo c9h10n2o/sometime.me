@@ -2,6 +2,7 @@
 include 'common/common.php';
 include 'common/conn.php';
 include 'common/gps/gps.php';
+include 'common/mail/send.php';
 
 $tile_id = empty($_REQUEST['id']) ? exit('{}') : (int)$_REQUEST['id'];
 
@@ -29,7 +30,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET') {
 		$is_first_comment = false;
 	?>
 		{
-			"something": "<?php echo filterUserText($r_comment->something) ?>"
+			"something": "<?php echo filter_user_text($r_comment->something) ?>"
 		,	"someone": "<?php echo $r_comment->someone ?>"
 		,	"someplace": "<?php echo $r_comment->someplace ?>"
 		,	"somewhere": "<?php echo $r_comment->somewhere ?>"
@@ -64,6 +65,32 @@ else {
 ,	"sometime": "<?php echo $r_this_comment->sometime ?>"
 }
 
-<?php } ?>
+<?php
+//	send a notification mail
+	$rs_tiles = $mysqli->query('SELECT block_id,title,file FROM tiles WHERE id='.$tile_id);
+	$rs_tile = $rs_tiles->fetch_object();
+	$rs_blocks = $mysqli->query('SELECT roll_id FROM blocks WHERE id='.$rs_tile->block_id);
+	$rs_block = $rs_blocks->fetch_object();
+	$rs_rolls = $mysqli->query('SELECT title,folder FROM rolls WHERE id='.$rs_block->roll_id);
+	$rs_roll = $rs_rolls->fetch_object();
+
+	$mail_pic_thumb = 'http://sometime.me/gallery/thumbs/'.$rs_roll->folder.'/'.$rs_tile->file.'.jpg';
+	$mail_pic_title = $rs_roll->title.' · '.$rs_tile->title;
+	$mail_link = 'http://sometime.me/#'.$rs_roll->folder.'/'.$tile_id;
+	$mail_subject = '【断章】《'.$mail_pic_title.'》有了新评论';
+	$mail_body = ($someplace ? '来自'.$someplace.'的 ' : '')
+				.($someone ? $someone : '过客')
+				.($somewhere ? '(<a href="'.$somewhere.'" target="_blank">'.$somewhere.'</a>)' : ($email ? '('.$email.')' : ''))
+				.' 对《<a href="'.$mail_link.'" target="_blank">'.$mail_pic_title.'</a>》评论道：'
+				.'<blockquote>'.$something.'</blockquote>'
+				.'<hr><a href="'.$mail_link.'" target="_blank"><img src="'.$mail_pic_thumb.'"></a>';
+
+	$rs_tiles->close();
+	$rs_blocks->close();
+	$rs_rolls->close();
+
+	send_mail($mail_subject, $mail_body, '寒塘渡月', ['someone@sometime.me', '寒塘渡月'], ['tara@sometime.me', '木樨']);
+}
+?>
 
 <?php $mysqli->close() ?>
